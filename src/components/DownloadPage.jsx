@@ -22,10 +22,7 @@ function Download({ design, pattern, capturedImage }) {
             ) : (
                 <p className="text-red-500">No image available</p>
             )}
-            <div className="mb-6">
-                <p className="text-lg">Design: <span className="font-semibold">{design || "N/A"}</span></p>
-                <p className="text-lg">Pattern: <span className="font-semibold">{pattern.name || "N/A"}</span></p>
-            </div>
+
             <button
                 onClick={downloadImage}
                 className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-gray-400"

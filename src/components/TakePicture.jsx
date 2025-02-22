@@ -29,7 +29,7 @@ function TakePicture({ design, pattern, setCapturedImage }) {
     const capture = () => {
         if (webcamRef.current && currentCaptureIndex < totalCaptures) {
             const imageSrc = webcamRef.current.getScreenshot();
-            // const imageSrc = 'patterns/pattern-1.png'
+            // const imageSrc = 'patterns/picture.jpg'
             setCapturedImages((prev) => [...prev, imageSrc]);
             setCurrentCaptureIndex((prev) => prev + 1);
             setCountdown(5);
@@ -58,15 +58,15 @@ function TakePicture({ design, pattern, setCapturedImage }) {
         const ctx = canvas.getContext("2d");
 
         const panels = Number(design.split("x")[0]);
-        const panelSize = 100; // Increased size for better quality
-        const panelWidth = panelSize;
-        const panelHeight = panelSize;
+        const panelWidth = 640; // Width of the panel, adjusted for clarity
+        const panelHeight = (panelWidth * 3) / 4; // Height adjusted to maintain 4:3 ratio
         const spacing = 10; // Increased spacing for better visibility
         const borderSize = 2; // Thicker black border
         const cornerRadius = 10; // Smoother rounded corners
         const horizontalPadding = 20; // Extra horizontal padding
         const patternHeight = pattern?.img ? panelHeight : 0; // Space for pattern if exists
-        const stripHeight = panels * (panelHeight + spacing) + patternHeight;
+        const stripHeight = panels * (panelHeight + spacing) + patternHeight; // Total height with spacing
+
 
         // High-resolution canvas for better quality
         const scaleFactor = 2; // Render at 2x for better sharpness
@@ -101,12 +101,32 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                 ctx.roundRect(xPosition + 2, yPosition + 2, panelWidth - 4, panelHeight - 4, cornerRadius);
                 ctx.fill();
 
+                // Calculate aspect ratio
+                const imgAspectRatio = img.width / img.height;
+                const panelAspectRatio = (panelWidth - 4) / (panelHeight - 4);
+
+                let drawWidth, drawHeight, offsetX, offsetY;
+
+                if (imgAspectRatio > panelAspectRatio) {
+                    // Image is wider than panel
+                    drawWidth = panelWidth - 4;
+                    drawHeight = drawWidth / imgAspectRatio;
+                    offsetX = xPosition + 2;
+                    offsetY = yPosition + 2 + (panelHeight - 4 - drawHeight) / 2;
+                } else {
+                    // Image is taller than panel
+                    drawHeight = panelHeight - 4;
+                    drawWidth = drawHeight * imgAspectRatio;
+                    offsetX = xPosition + 2 + (panelWidth - 4 - drawWidth) / 2;
+                    offsetY = yPosition + 2;
+                }
+
                 // Draw image inside border (centered & proportional)
                 ctx.save();
                 ctx.beginPath();
                 ctx.roundRect(xPosition + 2, yPosition + 2, panelWidth - 4, panelHeight - 4, cornerRadius);
                 ctx.clip();
-                ctx.drawImage(img, xPosition + 2, yPosition + 2, panelWidth - 4, panelHeight - 4);
+                ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
                 ctx.restore();
             });
 
@@ -180,7 +200,7 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                             <img
                                 src={capturedImages[index]}
                                 alt={`Captured ${index}`}
-                                className="w-full h-full object-cover rounded-lg"
+                                className="w-full h-full object-cover border-2 rounded-lg"
                             />
                         )}
                     </div>
@@ -202,29 +222,33 @@ function TakePicture({ design, pattern, setCapturedImage }) {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
             <h1 className="text-3xl font-bold mb-6">Take a Picture</h1>
+            <div className="flex flex-row items-center justify-center space-x-10 bg-gray-100">
 
-            <div className="mb-6">
-                <h2 className="text-xl font-semibold">Preview: {design}</h2>
-                {renderStripPreview()}
-            </div>
+                <div className="flex flex-col mb-6">
 
-            {isCapturing && countdown > 0 && (
-                <div className="text-4xl font-bold text-red-500 mb-4">
-                    {countdown}
+                    {isCapturing && countdown > 0 && (
+                        <div className="text-4xl text-center font-bold items-center justify-center text-red-500 mb-4">
+                            {countdown}
+                        </div>
+                    )}
+
+                    <div className="mb-6 flex justify-center">
+                        <Webcam
+                            ref={webcamRef}
+                            screenshotFormat="image/jpeg"
+                            className="rounded border-2 border-black shadow w-full max-w-sm aspect-[4/3]"
+                            videoConstraints={{
+                                facingMode: {exact: "user"}, // Ensures front camera on mobile
+                                width: 640,
+                                height: 480,
+                            }}
+                        />
+                    </div>
+
                 </div>
-            )}
-
-            <div className="mb-6 flex justify-center">
-                <Webcam
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    className="rounded shadow w-full max-w-sm aspect-[4/3]"
-                    videoConstraints={{
-                        facingMode: {exact: "user"}, // Ensures front camera on mobile
-                        width: 640,
-                        height: 480,
-                    }}
-                />
+                <div className="mb-6">
+                    {renderStripPreview()}
+                </div>
             </div>
 
 
