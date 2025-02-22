@@ -27,7 +27,7 @@ function App() {
                         />
                     }
                 />
-                <Route path="/take-picture" element={<TakePicture design={design} setCapturedImage={setCapturedImage} />} />
+                <Route path="/take-picture" element={<TakePicture design={design} pattern={pattern} setCapturedImage={setCapturedImage} />} />
                 <Route
                     path="/download"
                     element={
