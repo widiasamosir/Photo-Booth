@@ -32,7 +32,7 @@ function ChooseDesign({ setDesign }) {
     const displayText = (d) => (d === "4x1" ? "4 in 1" : d);
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 space-y-6">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 space-y-6 mb-5">
             <h1 className="text-3xl font-bold text-center">
                 Choose the Photo Strip Layout
             </h1>
@@ -57,7 +57,7 @@ function ChooseDesign({ setDesign }) {
 
             <button
                 onClick={() => navigate("/choose-pattern")}
-                className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-8 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
                 Next
             </button>

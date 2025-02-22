@@ -17,11 +17,12 @@ function Download({ design, pattern, capturedImage }) {
                 <img
                     src={capturedImage}
                     alt="Captured"
-                    className="mb-6 rounded shadow max-w-sm"
+                    className="mb-6 rounded shadow max-w-sm w-1/2"
                 />
             ) : (
                 <p className="text-red-500">No image available</p>
             )}
+
 
             <button
                 onClick={downloadImage}

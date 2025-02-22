@@ -64,7 +64,7 @@ function TakePicture({ design, pattern, setCapturedImage }) {
         const borderSize = 2; // Thicker black border
         const cornerRadius = 10; // Smoother rounded corners
         const horizontalPadding = 20; // Extra horizontal padding
-        const patternHeight = pattern?.img ? panelHeight : 0; // Space for pattern if exists
+        const patternHeight = pattern?.img ? panelHeight : 100; // Space for pattern if exists
         const stripHeight = panels * (panelHeight + spacing) + patternHeight; // Total height with spacing
 
 
@@ -108,13 +108,11 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                 let drawWidth, drawHeight, offsetX, offsetY;
 
                 if (imgAspectRatio > panelAspectRatio) {
-                    // Image is wider than panel
                     drawWidth = panelWidth - 4;
                     drawHeight = drawWidth / imgAspectRatio;
                     offsetX = xPosition + 2;
                     offsetY = yPosition + 2 + (panelHeight - 4 - drawHeight) / 2;
                 } else {
-                    // Image is taller than panel
                     drawHeight = panelHeight - 4;
                     drawWidth = drawHeight * imgAspectRatio;
                     offsetX = xPosition + 2 + (panelWidth - 4 - drawWidth) / 2;
@@ -139,7 +137,8 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                         const yPosition = panels * (panelHeight + spacing) + borderSize;
                         const xPosition = horizontalPadding;
 
-                                            ctx.beginPath();
+                        // Draw pattern image before clipping
+                        ctx.beginPath();
                         ctx.roundRect(xPosition + 2, yPosition + 2, panelWidth - 4, panelHeight - 4, cornerRadius);
                         ctx.fill();
 
@@ -160,7 +159,7 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                             offsetY = yPosition + 2;
                         }
 
-                        // Draw pattern image centered & proportional
+                        // Clip and draw the pattern image
                         ctx.save();
                         ctx.beginPath();
                         ctx.roundRect(xPosition + 2, yPosition + 2, panelWidth - 4, panelHeight - 4, cornerRadius);
@@ -171,7 +170,26 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                         resolve();
                     };
                 });
-            }
+            } else {
+                await new Promise((resolve) => {
+                    const yPosition = panels * (panelHeight + spacing) + borderSize;
+                    const xPosition = horizontalPadding;
+                    const text = pattern?.name || "No pattern available";
+                    const availableWidth = panelWidth - 4; // Panel width minus padding (left + right)
+                    const textWidth = ctx.measureText(text).width; // Measure text width
+
+                    // Calculate the horizontal position to center the text
+                    const textX = xPosition + (availableWidth - textWidth) / 2;
+                    // Draw text before clipping
+                    ctx.fillStyle = "#000000"; // Black color for text
+                    ctx.font = "bold 40px Arial";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    resolve();
+                });
+
+        }
+
 
             // Convert canvas to high-quality image
             const photoStripImage = canvas.toDataURL("image/jpeg", 1.0); // Max quality
@@ -180,7 +198,6 @@ function TakePicture({ design, pattern, setCapturedImage }) {
             console.error("Error generating photo strip:", error);
         }
     };
-
 
     const renderStripPreview = () => {
         if (!design || !design.includes("x")) {
@@ -206,13 +223,18 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                     </div>
                 ))}
 
-                {pattern && pattern.img && (
+                {/* Show pattern image or pattern name */}
+                {pattern?.img ? (
                     <div className="mt-2">
                         <img
                             src={`../patterns/${pattern.img}`}
                             alt={pattern.name}
                             className="w-20 h-20 object-contain"
                         />
+                    </div>
+                ) : (
+                    <div className="mt-2 text-center text-lg font-semibold text-gray-700">
+                        {pattern?.name}
                     </div>
                 )}
             </div>
@@ -225,7 +247,6 @@ function TakePicture({ design, pattern, setCapturedImage }) {
             <div className="flex flex-row items-center justify-center space-x-10 bg-gray-100">
 
                 <div className="flex flex-col mb-6">
-
                     {isCapturing && countdown > 0 && (
                         <div className="text-4xl text-center font-bold items-center justify-center text-red-500 mb-4">
                             {countdown}
@@ -238,20 +259,19 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                             screenshotFormat="image/jpeg"
                             className="rounded border-2 border-black shadow w-full max-w-sm aspect-[4/3]"
                             videoConstraints={{
-                                facingMode: {exact: "user"}, // Ensures front camera on mobile
+                                facingMode: { exact: "user" },
                                 width: 640,
                                 height: 480,
                             }}
                         />
                     </div>
-
                 </div>
                 <div className="mb-6">
                     {renderStripPreview()}
                 </div>
             </div>
 
-
+            {/* Action buttons */}
             {!isCapturing && !isFinished && (
                 <button
                     onClick={() => {
