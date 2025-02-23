@@ -32,10 +32,12 @@ function ChooseDesign({ setDesign }) {
     const displayText = (d) => (d === "4x1" ? "4 in 1" : d);
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 space-y-6 mb-5">
-            <h1 className="text-3xl font-bold text-center">
-                Choose the Photo Strip Layout
+        <div
+            className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 via-purple-200 to-purple-100 space-y-6 mb-5">
+            <h1 className="text-4xl font-extrabold text-center text-black font-serif tracking-wide">
+                📸 Choose Your Perfect Photo Strip Layout ✨
             </h1>
+
 
             <div className="grid grid-cols-3 gap-6">
                 {designs.map((d) => (
@@ -43,7 +45,7 @@ function ChooseDesign({ setDesign }) {
                         key={d}
                         onClick={() => handleSelect(d)}
                         className={`p-4 bg-white rounded shadow cursor-pointer border-4 ${
-                            selectedDesign === d ? "border-green-500" : "border-transparent"
+                            selectedDesign === d ? "border-purple-500" : "border-transparent"
                         }`}
                     >
                         {/* Render the photo strip preview horizontally */}

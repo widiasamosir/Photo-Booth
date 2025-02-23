@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
 
-function TakePicture({ design, pattern, setCapturedImage }) {
+function TakePicture({ color, design, pattern, setCapturedImage }) {
     const webcamRef = useRef(null);
     const navigate = useNavigate();
 
@@ -76,7 +76,8 @@ function TakePicture({ design, pattern, setCapturedImage }) {
 
         try {
             // White Background
-            ctx.fillStyle = "#FFFFFF";
+            ctx.fillStyle = color || "#FFFFFF";
+
             ctx.fillRect(0, 0, canvas.width / scaleFactor, canvas.height / scaleFactor);
 
             // Load captured images
@@ -96,7 +97,7 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                 const xPosition = horizontalPadding;
 
                 // Draw white background inside border
-                ctx.fillStyle = "#FFFFFF";
+                ctx.fillStyle = color || "#FFFFFF";
                 ctx.beginPath();
                 ctx.roundRect(xPosition + 2, yPosition + 2, panelWidth - 4, panelHeight - 4, cornerRadius);
                 ctx.fill();
@@ -185,6 +186,7 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                     ctx.font = "bold 40px Arial";
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
+                    ctx.fillText(text,textX, yPosition + 30);
                     resolve();
                 });
 
@@ -207,11 +209,11 @@ function TakePicture({ design, pattern, setCapturedImage }) {
         const panels = Number(design.split("x")[0]);
 
         return (
-            <div className="flex flex-col justify-center items-center space-y-1 p-2 border-2 border-gray-300 rounded-lg shadow-lg bg-gray-50">
+            <div className="flex flex-col justify-center items-center space-y-1 p-2 border-2 border-gray-300 rounded-lg shadow-lg bg-gray-50"  style={{ backgroundColor: color || "white" }}>
                 {Array.from({ length: panels }).map((_, index) => (
                     <div
                         key={index}
-                        className="w-20 h-20 bg-white border-2 border-black rounded-lg transform hover:scale-110 transition duration-300 ease-in-out"
+                        className="w-20 h-20 bg-white border-2 border-black rounded-lg transform hover:scale-110 transition duration-300 ease-in-out "
                     >
                         {capturedImages[index] && (
                             <img
@@ -240,13 +242,30 @@ function TakePicture({ design, pattern, setCapturedImage }) {
             </div>
         );
     };
+    const hexToRgba = (hex, opacity = 0.3) => {
+        // Remove '#' if present
+        hex = hex.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    };
 
+    const shadowColor = color ? hexToRgba(color, 0.3) : 'rgba(162, 102, 255, 0.3)';
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-            <h1 className="text-3xl font-bold mb-6">Take a Picture</h1>
+            {!isCapturing && capturedImages.length===0 && (
+                <h1 className="text-3xl font-bold mb-24">Ready??? Take a Picture....</h1>
+
+            )}
+            {!isCapturing && capturedImages.length>0 && (
+                <h1 className="text-3xl font-bold mb-24">Done !! You can click next to download the image</h1>
+
+            )}
             <div className="flex flex-row items-center justify-center space-x-10 bg-gray-100">
 
                 <div className="flex flex-col mb-6">
+
                     {isCapturing && countdown > 0 && (
                         <div className="text-4xl text-center font-bold items-center justify-center text-red-500 mb-4">
                             {countdown}
@@ -257,7 +276,10 @@ function TakePicture({ design, pattern, setCapturedImage }) {
                         <Webcam
                             ref={webcamRef}
                             screenshotFormat="image/jpeg"
-                            className="rounded border-2 border-black shadow w-full max-w-sm aspect-[4/3]"
+                            className="rounded-3xl border-2 border-black shadow w-full max-w-sm aspect-[4/3]"
+                            style={{
+                                boxShadow: `46px 46px 92px ${shadowColor}, -46px -46px 92px ${shadowColor}`
+                            }}
                             videoConstraints={{
                                 facingMode: { exact: "user" },
                                 width: 640,

@@ -9,7 +9,7 @@ function App() {
     const [design, setDesign] = useState("");
     const [pattern, setPattern] = useState("");
     const [capturedImage, setCapturedImage] = useState(null);
-
+    const [color, setColor] = useState(null);
     return (
         <Router>
             <Routes>
@@ -21,13 +21,15 @@ function App() {
                     path="/choose-pattern"
                     element={
                         <ChoosePattern
+                            color={color}
+                            setColor={setColor}
                             setPattern={setPattern}
                             design={design} // Pass the selected design as a prop
                             pattern={pattern}
                         />
                     }
                 />
-                <Route path="/take-picture" element={<TakePicture design={design} pattern={pattern} setCapturedImage={setCapturedImage} />} />
+                <Route path="/take-picture" element={<TakePicture color={color} design={design} pattern={pattern} setCapturedImage={setCapturedImage} />} />
                 <Route
                     path="/download"
                     element={
