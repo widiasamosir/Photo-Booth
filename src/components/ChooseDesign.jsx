@@ -35,8 +35,12 @@ function ChooseDesign({ setDesign }) {
         <div
             className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 via-purple-200 to-purple-100 space-y-6 mb-5">
             <h1 className="text-4xl font-extrabold text-center text-black font-serif tracking-wide">
-                📸 Choose Your Perfect Photo Strip Layout ✨
+                📸 Hi, Pemuda Remaja Maranatha! ✨
             </h1>
+            <h5 className="text-xl font-extrabold text-center text-black font-serif tracking-wide">
+                Selamat datang di Ibadah Perdana
+                <br/>Pilih tipe foto dan klik next untuk melanjutkan ya
+            </h5>
 
 
             <div className="grid grid-cols-3 gap-6">
