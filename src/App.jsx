@@ -10,6 +10,8 @@ function App() {
     const [pattern, setPattern] = useState("");
     const [capturedImage, setCapturedImage] = useState(null);
     const [color, setColor] = useState(null);
+    const [filter, setFilter] = useState(null);
+    const [sticker, setSticker] = useState(null);
     return (
         <Router>
             <Routes>
@@ -23,13 +25,15 @@ function App() {
                         <ChoosePattern
                             color={color}
                             setColor={setColor}
+                            sticker={sticker}
+                            setSticker={setSticker}
                             setPattern={setPattern}
                             design={design} // Pass the selected design as a prop
                             pattern={pattern}
                         />
                     }
                 />
-                <Route path="/take-picture" element={<TakePicture color={color} design={design} pattern={pattern} setCapturedImage={setCapturedImage} />} />
+                <Route path="/take-picture" element={<TakePicture color={color} design={design} sticker={sticker} pattern={pattern} setCapturedImage={setCapturedImage} filter={filter} setFilter={setFilter} />} />
                 <Route
                     path="/download"
                     element={
@@ -37,6 +41,8 @@ function App() {
                             capturedImage={capturedImage}
                             design={design}
                             pattern={pattern}
+                            sticker={sticker}
+                            filter={filter}
                         />
                     }
                 />
